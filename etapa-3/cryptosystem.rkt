@@ -73,7 +73,7 @@
 (define (key n)
   (let ((e (car (cdr (get-nth-quadruple n)))))
     (let ((f (car (cdr (cdr (get-nth-quadruple n))))))
-      (map (λ(x) (modulo x 27)) (list (a1 e f) (b1 e f) (c1 e f) (a2 e f) (b2 e f) (c2 e f) (a3 e f) (b3 e f) (c3 e f)))
+      (map (λ(x) (modulo x 27)) (map (λ(func) (func e f)) (list a1 b1 c1 a2 b2 c2 a3 b3 c3)))
       )
     )
   )
@@ -168,10 +168,18 @@
 ; În acest caz, ambele funcții primesc un șir de caractere
 ; (mesajul clar/criptat) și o listă de coduri (cheia) și
 ; întorc un șir de caractere (mesajul criptat/decriptat).
+(define cryptic-helper
+  (λ(func)
+    (λ(x y)
+      (codes->message (func (message->codes x) y))
+      )
+    )
+  )
+
 (define encrypt-message
-  (λ(x y) (codes->message (encrypt-codes (message->codes x) y)))
+  (cryptic-helper encrypt-codes)
   )
 (define decrypt-message
-  (λ(x y) (codes->message (decrypt-codes (message->codes x) y)))
+  (cryptic-helper decrypt-codes)
   )
            
