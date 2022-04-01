@@ -42,10 +42,12 @@
 ; Cele două funcții nu sunt re-punctate de checker, însă 
 ; sunt necesare generării succesorilor unui nod.
 (define (dot-product X Y)
-  'your-code-here)
+  (foldl + 0 (map (λ(x y) (* x y)) X Y))
+  )
 
 (define (multiply M V)
-  'your-code-here)
+  (map (λ(x) (dot-product x V)) M)
+  )
 
 
 ; TODO
@@ -54,7 +56,12 @@
 ; Funcție utilă: stream-append
 ; Folosiți cel puțin o formă de let.
 (define ppt-stream-in-tree-order
-  'your-code-here)
+  (let loop ((acc `(3 4 5)) (queue (list (multiply T1 '(3 4 5)) (multiply T2 '(3 4 5)) (multiply T3 '(3 4 5)))))
+    (let ((el (car queue)))
+      (stream-cons acc (loop el (append (cdr queue) (list (multiply T1 el) (multiply T2 el) (multiply T3 el)))))
+      )
+    )
+  )
 
 
 ;; Un alt mod de a genera TPP se folosește de perechi (g, h)
@@ -130,21 +137,35 @@
 ;    există în rezultatul funcției pairs, dar nu vor mai exista
 ;    în fluxul gh-pairs-stream)
 (define (pairs G H)
-  'your-code-here)
+  (let loop ((acc '()) (g G) (h H))
+    (if (null? acc)
+        (if (< (stream-first g) (stream-first h)) (loop (cons (stream-first g) (stream-first h)) (stream-rest g) h) (loop '() G (stream-rest h)))
+        (stream-cons acc (if (< (stream-first g) (stream-first h)) (loop (cons (stream-first g) (stream-first h)) (stream-rest g) h) (loop '() G (stream-rest h))))
+        )
+    )
+  )
 
 
 ; TODO
 ; Definiți fluxul de perechi (g, h) pe care se bazează noua
 ; indexare a TPP.
 ; Nu folosiți recursivitate explicită.
+(define naturals
+  (let loop ((n 0))
+    (stream-cons n (loop (add1 n)))
+    )
+  )
+
 (define gh-pairs-stream
-  'your-code-here)
+  (stream-filter (λ(pair) (= 1 (gcd (car pair) (cdr pair)))) (pairs (stream-filter odd? naturals) (stream-rest (stream-filter odd? naturals))))
+  )
 
 
 ; TODO
 ; Definiți fluxul de TPP corespunzător fluxului anterior de
 ; perechi (g, h).
 (define ppt-stream-in-pair-order
-  'your-code-here)
+  (stream-map (λ(pair) (let ((g (car pair)) (h (cdr pair))) (list (* g h) (/ (- (expt h 2) (expt g 2)) 2) (/ (+ (expt h 2) (expt g 2)) 2)))) gh-pairs-stream)
+  )
 
 

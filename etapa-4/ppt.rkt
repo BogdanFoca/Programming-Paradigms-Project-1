@@ -56,9 +56,9 @@
 ; Funcție utilă: stream-append
 ; Folosiți cel puțin o formă de let.
 (define ppt-stream-in-tree-order
-  (let loop ((acc `(3 4 5)) (queue (list (multiply T1 '(3 4 5)) (multiply T2 '(3 4 5)) (multiply T3 '(3 4 5)))))
-    (let ((el (car queue)))
-      (stream-cons acc (loop el (append (cdr queue) (list (multiply T1 el) (multiply T2 el) (multiply T3 el)))))
+  (let loop ((acc `(3 4 5)) (queue (stream (multiply T1 '(3 4 5)) (multiply T2 '(3 4 5)) (multiply T3 '(3 4 5)))))
+    (let ((el (stream-first queue)))
+      (stream-cons acc (loop el (stream-append (stream-rest queue) (stream (multiply T1 el) (multiply T2 el) (multiply T3 el)))))
       )
     )
   )
